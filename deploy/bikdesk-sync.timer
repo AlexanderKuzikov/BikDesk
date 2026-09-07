@@ -1,0 +1,10 @@
+[Unit]
+Description=BikDesk nightly BIK sync timer
+
+[Timer]
+OnCalendar=03:10
+Persistent=true
+RandomizedDelaySec=600
+
+[Install]
+WantedBy=timers.target

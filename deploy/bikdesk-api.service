@@ -1,0 +1,16 @@
+[Unit]
+Description=BikDesk read-only bank directory API
+After=network.target
+
+[Service]
+Type=simple
+User=deploy
+WorkingDirectory=/home/deploy/bikdesk
+ExecStart=/usr/bin/python3 /home/deploy/bikdesk/src/api.py --data /home/deploy/bikdesk/data --port 8789
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,11 @@
+[Unit]
+Description=BikDesk nightly BIK sync
+After=network.target postgresql.service
+
+[Service]
+Type=oneshot
+User=deploy
+WorkingDirectory=/home/deploy/bikdesk
+ExecStart=/usr/bin/python3 /home/deploy/bikdesk/src/sync.py --out /home/deploy/bikdesk/data --check --pg postgresql://bikdesk:bikdesk@localhost:5432/banks
+StandardOutput=journal
+StandardError=journal
