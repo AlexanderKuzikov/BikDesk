@@ -218,10 +218,12 @@ def main():
         prev_day = json.loads(meta_file.read_text(encoding="utf-8")).get("business_day")
         if prev_day == meta["business_day"]:
             print(f"SKIP: BusinessDay {meta['business_day']} already stored")
+            old = [json.loads(l) for l in
+                   (out_dir / "banks.jsonl").read_text(encoding="utf-8").splitlines()]
             if args.check:
-                old = [json.loads(l) for l in
-                       (out_dir / "banks.jsonl").read_text(encoding="utf-8").splitlines()]
                 run_checks(old)
+            if args.pg:
+                upsert_pg(args.pg, old)
             return
     full_meta = write_snapshot(out_dir, meta, records)
     print(f"WROTE: {full_meta['entries']} entries, BusinessDay {full_meta['business_day']}")
