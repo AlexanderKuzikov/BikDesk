@@ -2,6 +2,7 @@
 
 Reads data/banks.jsonl + banks.meta.json into memory (directory is tiny).
 Routes:
+    GET /                      -> web frontend (web/index.html)
     GET /api/health            -> status, business_day, entries
     GET /api/banks/<9-digit>   -> record or 404
     GET /api/banks?name=...    -> substring search over name, max 50
@@ -43,7 +44,14 @@ class Handler(BaseHTTPRequestHandler):
         records, meta = self.server.snapshot
         url = urllib.parse.urlparse(self.path)
         parts = url.path.strip("/").split("/")
-        if url.path == "/api/health":
+        if url.path in ("/", "/index.html"):
+            try:
+                body = (self.server.web_dir / "index.html").read_bytes()
+            except OSError:
+                self._send(404, "frontend not found", "text/plain; charset=utf-8")
+                return
+            self._send(200, body, "text/html; charset=utf-8")
+        elif url.path == "/api/health":
             self._send(200, json.dumps({
                 "status": "ok",
                 "business_day": meta.get("business_day"),
@@ -78,9 +86,11 @@ def main():
     ap.add_argument("--data", default="data")
     ap.add_argument("--port", type=int, default=8789)
     ap.add_argument("--host", default="127.0.0.1")
+    ap.add_argument("--web", default=str(Path(__file__).resolve().parent.parent / "web"))
     args = ap.parse_args()
     server = ThreadingHTTPServer((args.host, args.port), Handler)
     server.snapshot = load_snapshot(Path(args.data))
+    server.web_dir = Path(args.web)
     print(f"BikDesk API on http://{args.host}:{args.port} "
           f"({len(server.snapshot[0])} banks)")
     server.serve_forever()

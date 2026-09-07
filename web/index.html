@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BikDesk — справочник банков</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1em auto; max-width: 1100px; padding: 0 1em; }
+  #meta { color: #555; margin-bottom: .5em; }
+  #q { width: 100%; padding: .5em; font-size: 1em; margin-bottom: .5em; box-sizing: border-box; }
+  table { border-collapse: collapse; width: 100%; font-size: .9em; }
+  th, td { border: 1px solid #ccc; padding: .3em .5em; text-align: left; }
+  th { cursor: pointer; background: #f0f0f0; white-space: nowrap; }
+  th.sorted::after { content: " \2195"; }
+  th.asc::after { content: " \2191"; }
+  th.desc::after { content: " \2193"; }
+  td.num { font-variant-numeric: tabular-nums; white-space: nowrap; }
+</style>
+</head>
+<body>
+<h1>BikDesk</h1>
+<div id="meta">Загрузка…</div>
+<input id="q" type="search" placeholder="Поиск: название, БИК или корсчёт" autocomplete="off">
+<table>
+  <thead><tr>
+    <th data-k="bic">БИК</th>
+    <th data-k="name">Наименование</th>
+    <th data-k="corr_account">Корсчёт</th>
+    <th data-k="participant_status">Статус</th>
+    <th data-k="reg_n">Рег№</th>
+    <th data-k="region">Регион</th>
+  </tr></thead>
+  <tbody id="rows"></tbody>
+</table>
+<script>
+let all = [], sortK = "bic", sortD = 1;
+fetch("api/dump").then(r => r.text()).then(t => {
+  all = t.trim().split("\n").map(l => JSON.parse(l));
+  fetch("api/health").then(r => r.json()).then(h => {
+    document.getElementById("meta").textContent =
+      "Срез ЦБ на " + h.business_day + ", записей: " + h.entries;
+  });
+  render("");
+});
+function render(q) {
+  q = q.toLowerCase();
+  let rows = all.filter(r =>
+    !q || (r.name || "").toLowerCase().includes(q) ||
+    (r.bic || "").includes(q) || (r.corr_account || "").includes(q));
+  rows.sort((a, b) => {
+    let x = (a[sortK] || "") + "", y = (b[sortK] || "") + "";
+    return (x < y ? -1 : x > y ? 1 : 0) * sortD;
+  });
+  document.getElementById("rows").innerHTML = rows.map(r =>
+    "<tr><td class=num>" + r.bic + "</td><td>" + esc(r.name) + "</td>" +
+    "<td class=num>" + (r.corr_account || "—") + "</td>" +
+    "<td>" + (r.participant_status || "—") + "</td>" +
+    "<td>" + (r.reg_n || "—") + "</td><td>" + (r.region || "—") + "</td></tr>"
+  ).join("");
+}
+function esc(s) {
+  return (s || "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+}
+document.getElementById("q").addEventListener("input", e => render(e.target.value));
+document.querySelectorAll("th").forEach(th => th.addEventListener("click", () => {
+  let k = th.dataset.k;
+  if (sortK === k) sortD *= -1; else { sortK = k; sortD = 1; }
+  document.querySelectorAll("th").forEach(h => h.className = "");
+  th.className = "sorted " + (sortD === 1 ? "asc" : "desc");
+  render(document.getElementById("q").value);
+}));
+</script>
+</body>
+</html>
