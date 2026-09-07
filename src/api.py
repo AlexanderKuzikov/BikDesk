@@ -84,7 +84,7 @@ class Handler(BaseHTTPRequestHandler):
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--data", default="data")
-    ap.add_argument("--port", type=int, default=8789)
+    ap.add_argument("--port", type=int, default=8790)
     ap.add_argument("--host", default="127.0.0.1")
     ap.add_argument("--web", default=str(Path(__file__).resolve().parent.parent / "web"))
     args = ap.parse_args()

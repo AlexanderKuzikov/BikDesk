@@ -22,9 +22,9 @@
 git clone https://github.com/AlexanderKuzikov/BikDesk.git
 cd BikDesk
 python src/sync.py --out data
-python src/api.py --data data --port 8789
-# фронт: http://127.0.0.1:8789/ — поиск и сортировка
-curl "http://127.0.0.1:8789/api/banks/044525225"
+python src/api.py --data data --port 8790
+# фронт: http://127.0.0.1:8790/ — поиск и сортировка
+curl "http://127.0.0.1:8790/api/banks/044525225"
 ```
 
 ## Документация
