@@ -14,6 +14,7 @@ import argparse
 import datetime as dt
 import io
 import json
+import os
 import sys
 import urllib.request
 import zipfile
@@ -202,7 +203,7 @@ def main():
     ap.add_argument("--out", default="data")
     ap.add_argument("--check", action="store_true")
     ap.add_argument("--force", action="store_true")
-    ap.add_argument("--pg", default=None)
+    ap.add_argument("--pg", default=os.environ.get("DATABASE_URL"))
     args = ap.parse_args()
 
     out_dir = Path(args.out)
