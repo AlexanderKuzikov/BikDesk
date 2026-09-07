@@ -3,7 +3,7 @@
 ## Commands
 - sync: `python src/sync.py --out data`
 - sync check: `python src/sync.py --out data --check`
-- api: `python src/api.py --data data --port 8789`
+- api: `python src/api.py --data data --port 8790`
 - no tests yet (single runnable check inside sync.py)
 
 ## Conventions
@@ -24,6 +24,11 @@
 - Sat server (`135.106.192.125`) — только по явной просьбе на деплой
 - `git push --force`, `git reset --hard` — только с подтверждением
 - Commit + push — только когда явно попросят
+
+## Git
+- Один коммит на одну задачу, не десятки в день
+- Заголовок = строка из журнала docs/CONTEXT.md («коммит = строка журнала»)
+- Промежуточные сохранения — локально с `wip`, перед пушем squash в один осмысленный
 
 ## Documentation rules
 - После работы — обнови docs/CONTEXT.md

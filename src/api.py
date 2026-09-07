@@ -9,7 +9,7 @@ Routes:
     GET /api/dump              -> full snapshot as NDJSON
 
 Usage:
-    python src/api.py --data data --port 8789
+    python src/api.py --data data --port 8790
 """
 
 import argparse
