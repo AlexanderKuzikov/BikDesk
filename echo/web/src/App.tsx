@@ -65,12 +65,16 @@ export default function App() {
             v{ver}
           </span>
         )}
-        {board !== '' && <span className="boardname">{board}</span>}
         <span className="viewswitch">
           <button className={view === 'board' ? 'on' : ''} onClick={() => setView('board')}>Доска</button>
           <button className={view === 'cal' ? 'on' : ''} onClick={() => setView('cal')}>Календарь</button>
           <button className={view === 'docs' ? 'on' : ''} onClick={() => setView('docs')}>Документы</button>
         </span>
+        {board !== '' && (
+          <div className="projlogo" title={`Трекер проекта ${board}`}>
+            <span className="projname">{board}</span>
+          </div>
+        )}
       </header>
       {err && <div className="error">{err}</div>}
       {view === 'board' && (
