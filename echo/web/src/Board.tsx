@@ -120,14 +120,8 @@ export default function Board({ user, columns, cards, reload, setOpenId }: Props
                   )}
                   {c.deadline && <span className={'badge' + (c.overdue ? ' bad' : '')}>до {fmtDate(c.deadline)}</span>}
                 </div>
-                {(c.assignee_login || c.files_count > 0 || c.comments_count > 0 || c.checklist_total > 0) && (
+                {(c.files_count > 0 || c.comments_count > 0 || c.checklist_total > 0) && (
                   <div className="cardfoot">
-                    {c.assignee_login && (
-                      <span className="assignee">
-                        <span className="avatar">{initials(c.assignee_login)}</span>
-                        {c.assignee_login}
-                      </span>
-                    )}
                     <span className="muted">
                       {c.checklist_total > 0 && `✓ ${c.checklist_total - c.checklist_open}/${c.checklist_total}`}
                       {c.checklist_total > 0 && (c.files_count > 0 || c.comments_count > 0) && ' · '}

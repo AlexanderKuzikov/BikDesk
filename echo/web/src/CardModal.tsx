@@ -152,15 +152,6 @@ export default function CardModalHost({ cardId, users, columns, onClose, onOpenD
             </select>
           </label>
           <label>
-            Исполнитель
-            <select value={draft.assignee_id} onChange={(e) => setDraft({ ...draft, assignee_id: e.target.value })}>
-              <option value="">—</option>
-              {users.map((u) => (
-                <option key={u.id} value={u.id}>{u.login}</option>
-              ))}
-            </select>
-          </label>
-          <label>
             Срок
             <input type="date" value={draft.deadline} onChange={(e) => setDraft({ ...draft, deadline: e.target.value })} />
           </label>
@@ -317,7 +308,7 @@ function fmtDT(iso: string): string {
 const ACT_TEXT: Record<string, string> = {
   created: 'создана',
   moved: 'перемещена',
-  assigned: 'исполнитель',
+  assigned: 'назначение',
   file_added: 'файл',
   file_removed: 'убран файл',
 };
@@ -328,13 +319,13 @@ function Feed({ card, refresh }: { card: Card; refresh: () => Promise<void> }) {
   const events = [
     ...(card.activity ?? []).map((a) => ({ at: a.created_at, key: 'a' + a.id, node: (
       <div key={'a' + a.id} className="alog">
-        <span className="muted">{fmtDT(a.created_at)} · {a.actor ?? '?'}:</span> {ACT_TEXT[a.kind] ?? a.kind}
+        <span className="muted">{fmtDT(a.created_at)}:</span> {ACT_TEXT[a.kind] ?? a.kind}
         {a.detail !== '' && ` — ${a.detail}`}
       </div>
     ) })),
     ...(card.comments ?? []).map((c) => ({ at: c.created_at, key: 'c' + c.id, node: (
       <div key={'c' + c.id} className="bubble">
-        <div className="muted">{c.author ?? '?'} · {fmtDT(c.created_at)}</div>
+        <div className="muted">{fmtDT(c.created_at)}</div>
         <div>{c.body}</div>
       </div>
     ) })),
