@@ -29,6 +29,23 @@ def load_snapshot(data_dir):
     return records, meta
 
 
+def snapshot_marker(data_dir):
+    # techdebt: mtime-поллинг вместо inotify — файл крошечный, stat дешёвый,
+    # апгрейд не нужен пока снапшот пишется целиком раз в сутки.
+    try:
+        return (data_dir / "banks.meta.json").stat().st_mtime_ns
+    except OSError:
+        return None
+
+
+def maybe_reload(server):
+    # meta пишется синком последней — её mtime значит, что jsonl уже целый.
+    marker = snapshot_marker(server.data_dir)
+    if marker != server.snapshot_marker:
+        server.snapshot = load_snapshot(server.data_dir)
+        server.snapshot_marker = marker
+
+
 class Handler(BaseHTTPRequestHandler):
     server_version = "BikDesk/0.1"
 
@@ -41,6 +58,7 @@ class Handler(BaseHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):  # noqa: N802
+        maybe_reload(self.server)
         records, meta = self.server.snapshot
         url = urllib.parse.urlparse(self.path)
         parts = url.path.strip("/").split("/")
@@ -89,7 +107,9 @@ def main():
     ap.add_argument("--web", default=str(Path(__file__).resolve().parent.parent / "web"))
     args = ap.parse_args()
     server = ThreadingHTTPServer((args.host, args.port), Handler)
-    server.snapshot = load_snapshot(Path(args.data))
+    server.data_dir = Path(args.data)
+    server.snapshot = load_snapshot(server.data_dir)
+    server.snapshot_marker = snapshot_marker(server.data_dir)
     server.web_dir = Path(args.web)
     print(f"BikDesk API on http://{args.host}:{args.port} "
           f"({len(server.snapshot[0])} banks)")
