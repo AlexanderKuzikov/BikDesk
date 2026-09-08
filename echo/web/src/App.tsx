@@ -16,6 +16,7 @@ export default function App() {
   const [openId, setOpenId] = useState<string | null>(null);
   const [docPath, setDocPath] = useState<string | null>(null);
   const [ver, setVer] = useState('');
+  const [board, setBoard] = useState('');
 
   const load = useCallback(async () => {
     const [u, cols, list] = await Promise.all([api.users().catch(() => [] as User[]), api.columns(), api.cards()]);
@@ -40,6 +41,8 @@ export default function App() {
       .then((j: unknown) => {
         const v = (j as { version?: unknown }).version;
         if (typeof v === 'string') setVer(v);
+        const b = (j as { board?: unknown }).board;
+        if (typeof b === 'string' && b.trim() !== '') setBoard(b.trim());
       })
       .catch(() => undefined);
   }, [load]);
@@ -62,6 +65,7 @@ export default function App() {
             v{ver}
           </span>
         )}
+        {board !== '' && <span className="boardname">{board}</span>}
         <span className="viewswitch">
           <button className={view === 'board' ? 'on' : ''} onClick={() => setView('board')}>Доска</button>
           <button className={view === 'cal' ? 'on' : ''} onClick={() => setView('cal')}>Календарь</button>

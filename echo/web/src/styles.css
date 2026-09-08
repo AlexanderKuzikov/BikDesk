@@ -259,6 +259,14 @@ button.link {
   font-size: 16px;
 }
 
+.boardname {
+  font-weight: 650;
+  padding: 2px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--panel);
+}
+
 .modal h3 {
   font-size: 15px;
   margin: 18px 0 8px;
